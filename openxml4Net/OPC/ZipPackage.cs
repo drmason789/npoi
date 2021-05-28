@@ -1,4 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿using NPOI.Compression;
 using NPOI.Openxml4Net.Exceptions;
 using NPOI.OpenXml4Net.Exceptions;
 using NPOI.OpenXml4Net.OPC.Internal;
@@ -58,7 +58,7 @@ namespace NPOI.OpenXml4Net.OPC
             : base(access)
         {
             isStream = true;
-            ZipInputStream zis = ZipHelper.OpenZipStream(in1);
+            IZipInputStream zis = ZipHelper.OpenZipStream(in1);
             // TODO: ZipSecureFile
             //ThresholdInputStream zis = ZipHelper.OpenZipStream(in1);
             this.zipArchive = new ZipInputStreamZipEntrySource(zis);
@@ -91,7 +91,7 @@ namespace NPOI.OpenXml4Net.OPC
             ZipEntrySource ze;
             try
             {
-                ZipFile zipFile = ZipHelper.OpenZipFile(file);
+                IZipFile zipFile = ZipHelper.OpenZipFile(file);
                 ze = new ZipFileZipEntrySource(zipFile);
             }
             catch (IOException e)
@@ -107,7 +107,7 @@ namespace NPOI.OpenXml4Net.OPC
                 // the workaround is to iterate over the stream and not the directory
                 FileStream fis = null;
                 //ThresholdInputStream zis = null;
-                ZipInputStream zis = null;
+                IZipInputStream zis = null;
                 try
                 {
                     fis = file.Create();
@@ -194,7 +194,7 @@ namespace NPOI.OpenXml4Net.OPC
             IEnumerator entries = this.zipArchive.Entries;
             while (entries.MoveNext())
             {
-                ZipEntry entry = (ZipEntry)entries.Current;
+                IZipEntry entry = (IZipEntry)entries.Current;
                 if (entry.Name.ToLower().Equals(
                         ContentTypeManager.CONTENT_TYPES_PART_NAME.ToLower()))
                 {
@@ -221,7 +221,7 @@ namespace NPOI.OpenXml4Net.OPC
                 entries = this.zipArchive.Entries;
                 while (entries.MoveNext())
                 {
-                    ZipEntry entry = entries.Current as ZipEntry;
+                    IZipEntry entry = entries.Current as IZipEntry;
                     if (entry.Name.Equals(MIMETYPE))
                     {
                         hasMimetype = true;
@@ -256,7 +256,7 @@ namespace NPOI.OpenXml4Net.OPC
             entries = this.zipArchive.Entries;
             while (entries.MoveNext())
             {
-                ZipEntry entry = (ZipEntry)entries.Current;
+                IZipEntry entry = (IZipEntry)entries.Current;
                 PackagePartName partName = BuildPartName(entry);
                 if (partName == null) continue;
 
@@ -280,7 +280,7 @@ namespace NPOI.OpenXml4Net.OPC
             entries = this.zipArchive.Entries;
             while (entries.MoveNext())
             {
-                ZipEntry entry = entries.Current as ZipEntry;
+                IZipEntry entry = entries.Current as IZipEntry;
                 PackagePartName partName = BuildPartName(entry);
                 if (partName == null) continue;
 
@@ -318,7 +318,7 @@ namespace NPOI.OpenXml4Net.OPC
          * Builds a PackagePartName for the given ZipEntry,
          *  or null if it's the content types / invalid part
          */
-        private PackagePartName BuildPartName(ZipEntry entry)
+        private PackagePartName BuildPartName(IZipEntry entry)
         {
             try
             {
@@ -524,16 +524,16 @@ namespace NPOI.OpenXml4Net.OPC
         {
             // Check that the document was open in write mode
             ThrowExceptionIfReadOnly();
-            ZipOutputStream zos = null;
+            IZipOutputStream zos = null;
 
             try
             {
-                if (!(outputStream is ZipOutputStream))
-                    zos = new ZipOutputStream(outputStream);
+                if (!(outputStream is IZipOutputStream))
+                    zos = Compression.Compression.Instance.CreateZipOutputStream(outputStream);
                 else
-                    zos = (ZipOutputStream)outputStream;
+                    zos = (IZipOutputStream)outputStream;
 
-                zos.UseZip64 = UseZip64.Off;
+                zos.Zip64 = Zip64.Off;
                 // If the core properties part does not exist in the part list,
                 // we save it as well
                 if (this.GetPartsByRelationshipType(PackageRelationshipTypes.CORE_PROPERTIES).Count == 0 &&
@@ -569,7 +569,7 @@ namespace NPOI.OpenXml4Net.OPC
 
                 // Save content type part.
                 logger.Log(POILogger.DEBUG, "Save content types part");
-                this.contentTypeManager.Save(zos);
+                this.contentTypeManager.Save(zos.ToStream());
 
                 // Save parts.
                 foreach (PackagePart part in GetParts())
@@ -586,7 +586,7 @@ namespace NPOI.OpenXml4Net.OPC
                     {
                         PartMarshaller marshaller = partMarshallers[part._contentType];
 
-                        if (!marshaller.Marshall(part, zos))
+                        if (!marshaller.Marshall(part, zos.ToStream()))
                         {
                             throw new OpenXml4NetException(
                                     "The part "
@@ -597,7 +597,7 @@ namespace NPOI.OpenXml4Net.OPC
                     }
                     else
                     {
-                        if (!defaultPartMarshaller.Marshall(part, zos))
+                        if (!defaultPartMarshaller.Marshall(part, zos.ToStream()))
                             throw new OpenXml4NetException(
                                     "The part "
                                             + part.PartName.URI

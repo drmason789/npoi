@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
-using ICSharpCode.SharpZipLib.Zip;
+using NPOI.Compression;
 using NPOI.OpenXml4Net.Util;
 using NPOI.SS;
 using NPOI.SS.Formula.UDF;
@@ -437,10 +437,10 @@ namespace NPOI.XSSF.Streaming
         private void InjectData(FileInfo zipfile, Stream outStream)
         {
             // don't use ZipHelper.openZipFile here - see #59743
-            ZipFile zip = new ZipFile(zipfile.FullName);
+            IZipFile zip = Compression.Compression.Instance.CreateZipFile(File.OpenRead(zipfile.FullName));
             try
             {
-                ZipOutputStream zos = new ZipOutputStream(outStream);
+                IZipOutputStream zos = Compression.Compression.Instance.CreateZipOutputStream(outStream);
                 try
                 {
                     //ZipEntrySource zipEntrySource = new ZipFileZipEntrySource(zip);
@@ -448,9 +448,10 @@ namespace NPOI.XSSF.Streaming
                     var en = zip.GetEnumerator();
                     while (en.MoveNext())
                     {
-                        var ze = (ZipEntry)en.Current;
-                        zos.PutNextEntry(new ZipEntry(ze.Name));
-                        var inputStream = zip.GetInputStream(ze);
+                        var ze = (IZipEntry)en.Current;
+                        var nextEntry = Compression.Compression.Instance.CreateZipEntry(ze.Name);
+                        zos.PutNextEntry(nextEntry);
+                        var inputStream = ze.GetInputStream();
                         XSSFSheet xSheet = GetSheetFromZipEntryName(ze.Name);
                         if (xSheet != null)
                         {
@@ -458,7 +459,7 @@ namespace NPOI.XSSF.Streaming
                             var xis = sxSheet.GetWorksheetXMLInputStream();
                             try
                             {
-                                CopyStreamAndInjectWorksheet(inputStream, zos, xis);
+                                CopyStreamAndInjectWorksheet(inputStream, zos.ToStream(), xis);
                             }
                             finally
                             {
@@ -467,7 +468,7 @@ namespace NPOI.XSSF.Streaming
                         }
                         else
                         {
-                            inputStream.CopyTo(zos);
+                            inputStream.CopyTo(zos.ToStream());
                         }
                         inputStream.Close();
                     }

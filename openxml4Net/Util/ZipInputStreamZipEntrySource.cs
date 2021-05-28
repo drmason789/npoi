@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Collections;
-using ICSharpCode.SharpZipLib.Zip;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.Util
 {
@@ -25,14 +25,14 @@ namespace NPOI.OpenXml4Net.Util
          * We'll then eat lots of memory, but be able to
          *  work with the entries at-will.
          */
-        public ZipInputStreamZipEntrySource(ZipInputStream inp)
+        public ZipInputStreamZipEntrySource(IZipInputStream inp)
         {
             zipEntries = new List<FakeZipEntry>();
 
             bool going = true;
             while (going)
             {
-                ZipEntry zipEntry = inp.GetNextEntry();
+                IZipEntry zipEntry = inp.GetNextEntry();
                 if (zipEntry == null)
                 {
                     going = false;
@@ -56,7 +56,7 @@ namespace NPOI.OpenXml4Net.Util
             }
         }
 
-        public Stream GetInputStream(ZipEntry zipEntry)
+        public Stream GetInputStream(IZipEntry zipEntry)
         {
             FakeZipEntry entry = (FakeZipEntry)zipEntry;
             return entry.GetInputStream();
@@ -115,12 +115,14 @@ namespace NPOI.OpenXml4Net.Util
          * Holds the (decompressed!) data in memory, so
          *  close this as soon as you can! 
          */
-        public class FakeZipEntry : ZipEntry
+        public class FakeZipEntry : IZipEntry
         {
             private byte[] data;
 
-            public FakeZipEntry(ZipEntry entry, ZipInputStream inp) : base(entry.Name)
+            public FakeZipEntry(IZipEntry entry, IZipInputStream inp) 
             {
+
+                this.Name = entry.Name;
 
                 // Grab the de-compressed contents for later
                 MemoryStream baos = new MemoryStream();
@@ -150,6 +152,10 @@ namespace NPOI.OpenXml4Net.Util
 
                 data = baos.ToArray();
             }
+
+            public string Name { get; private set; }
+
+            public long Size => 0L;
 
             public Stream GetInputStream()
             {

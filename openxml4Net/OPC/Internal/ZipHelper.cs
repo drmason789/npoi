@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
 using NPOI.POIFS.Common;
 using NPOI.Util;
 using NPOI.POIFS.Storage;
 using NPOI.Openxml4Net.Exceptions;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.OPC.Internal
 {
@@ -41,29 +41,29 @@ namespace NPOI.OpenXml4Net.OPC.Internal
          * @throws OpenXml4NetException
          *             Throws if internal error occurs.
          */
-        public static ZipEntry GetCorePropertiesZipEntry(ZipPackage pkg)
+        public static IZipEntry GetCorePropertiesZipEntry(ZipPackage pkg)
         {
             PackageRelationship corePropsRel = pkg.GetRelationshipsByType(
                     PackageRelationshipTypes.CORE_PROPERTIES).GetRelationship(0);
 
             if (corePropsRel == null)
                 return null;
-
-            ZipEntry ze = new ZipEntry(corePropsRel.TargetUri.OriginalString);
+            
+            IZipEntry ze = Compression.Compression.Instance.CreateZipEntry(corePropsRel.TargetUri.OriginalString);
             return ze;
         }
 
         /**
          * Retrieve the Zip entry of the content types part.
          */
-        public static ZipEntry GetContentTypeZipEntry(ZipPackage pkg)
+        public static IZipEntry GetContentTypeZipEntry(ZipPackage pkg)
         {
             IEnumerator entries = pkg.ZipArchive.Entries;
             // Enumerate through the Zip entries until we find the one named
             // '[Content_Types].xml'.
             while (entries.MoveNext())
             {
-                ZipEntry entry = (ZipEntry)entries.Current;
+                IZipEntry entry = (IZipEntry)entries.Current;
                 if (entry.Name.Equals(
                         ContentTypeManager.CONTENT_TYPES_PART_NAME))
                     return entry;
@@ -225,13 +225,13 @@ namespace NPOI.OpenXml4Net.OPC.Internal
         //    return ZipSecureFile.addThreshold(zis);
         //}
 
-        public static ZipInputStream OpenZipStream(Stream stream)
+        public static IZipInputStream OpenZipStream(Stream stream)
         {
             // TODO: ZipSecureFile
             //InputStream zis = new ZipInputStream(stream);
             //ThresholdInputStream tis = ZipSecureFile.AddThreshold(zis);
             //return tis;
-            return new ZipInputStream(stream);
+            return Compression.Compression.Instance.CreateZipInputStream(stream);
         }
         /**
         * Opens the specified file as a zip, or returns null if no such file exists
@@ -240,7 +240,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal
         *            The file to open.
         * @return The zip archive freshly open.
         */
-        public static ZipFile OpenZipFile(FileInfo file)
+        public static IZipFile OpenZipFile(FileInfo file)
         {
             if (!file.Exists)
             {
@@ -264,7 +264,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal
             // TODO: ZipSecureFile
             //// Open as a proper zip file
             //return new ZipSecureFile(file);
-            return new ZipFile(File.OpenRead(file.FullName));
+            return Compression.Compression.Instance.CreateZipFile(File.OpenRead(file.FullName));
         }
         /**
          * Retrieve and open a zip file with the specified path.
@@ -273,7 +273,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal
          *            The file path.
          * @return The zip archive freshly open.
          */
-        public static ZipFile OpenZipFile(String path)
+        public static IZipFile OpenZipFile(String path)
         {
             return OpenZipFile(new FileInfo(path));
         }

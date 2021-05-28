@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.Util
 {
@@ -14,8 +14,8 @@ namespace NPOI.OpenXml4Net.Util
      */
     public class ZipFileZipEntrySource : ZipEntrySource
     {
-        private ZipFile zipArchive;
-        public ZipFileZipEntrySource(ZipFile zipFile)
+        private IZipFile zipArchive;
+        public ZipFileZipEntrySource(IZipFile zipFile)
         {
             this.zipArchive = zipFile;
         }
@@ -45,12 +45,13 @@ namespace NPOI.OpenXml4Net.Util
             }
         }
 
-        public Stream GetInputStream(ZipEntry entry)
+        public Stream GetInputStream(IZipEntry entry)
         {
             if (zipArchive == null)
                 throw new InvalidDataException("Zip File is closed");
-            Stream s = zipArchive.GetInputStream(entry);
-            return s;
+            return entry.GetInputStream();
+            //Stream s = zipArchive.GetInputStream(entry);
+            //return s;
         }
     }
 }

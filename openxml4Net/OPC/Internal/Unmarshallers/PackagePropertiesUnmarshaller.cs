@@ -5,8 +5,9 @@ using System.Xml;
 using System.IO;
 using System.Collections;
 using NPOI.OpenXml4Net.Exceptions;
-using ICSharpCode.SharpZipLib.Zip;
 using NPOI.Util;
+using NPOI.Compression;
+
 namespace NPOI.OpenXml4Net.OPC.Internal.Unmarshallers
 {
     /**
@@ -82,7 +83,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Unmarshallers
                 else if (context.Package != null)
                 {
                     // Try to retrieve the part inputstream from the URI
-                    ZipEntry zipEntry;
+                    IZipEntry zipEntry;
                     try
                     {
                         zipEntry = ZipHelper

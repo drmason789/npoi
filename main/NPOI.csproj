@@ -85,9 +85,6 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
       <HintPath>..\solution\packages\Portable.BouncyCastle.1.8.6\lib\net40\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=1.2.0.246, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <HintPath>..\solution\packages\SharpZipLib.1.2.0\lib\net45\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
     <Reference Include="System">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll</HintPath>
     </Reference>
@@ -97,6 +94,7 @@
     <Reference Include="System.Drawing">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Drawing.dll</HintPath>
     </Reference>
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.XML.dll</HintPath>
@@ -106,6 +104,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compression\Compression.cs" />
+    <Compile Include="Compression\DotNet\DotNetCompression.cs" />
+    <Compile Include="Compression\ICompression.cs" />
+    <Compile Include="Compression\IZipEntry.cs" />
+    <Compile Include="Compression\IZipFile.cs" />
+    <Compile Include="Compression\IZipInputStream.cs" />
+    <Compile Include="Compression\IZipOutputStream.cs" />
+    <Compile Include="Compression\DotNet\ZipEntry.cs" />
+    <Compile Include="Compression\DotNet\ZipFile.cs" />
+    <Compile Include="Compression\DotNet\ZipInputStream.cs" />
+    <Compile Include="Compression\DotNet\ZipOutputStream.cs" />
     <Compile Include="DDF\AbstractEscherOptRecord.cs" />
     <Compile Include="DDF\EscherColorRef.cs" />
     <Compile Include="DDF\EscherTertiaryOptRecord.cs" />

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
-using ICSharpCode.SharpZipLib.Zip;
 using NPOI.Util;
+using NPOI.Compression;
+
 namespace NPOI.OpenXml4Net.OPC.Internal
 {
 /**
@@ -33,13 +34,13 @@ public class ZipContentTypeManager:ContentTypeManager {
 
 	
 	public override bool SaveImpl(XmlDocument content, Stream out1) {
-		ZipOutputStream zos = null;
-		if (out1 is ZipOutputStream)
-			zos = (ZipOutputStream) out1;
+		IZipOutputStream zos = null;
+		if (out1 is IZipOutputStream)
+			zos = (IZipOutputStream) out1;
 		else
-			zos = new ZipOutputStream(out1);
+			zos = Compression.Compression.Instance.CreateZipOutputStream(out1);
 
-        ZipEntry partEntry = new ZipEntry(CONTENT_TYPES_PART_NAME);
+        IZipEntry partEntry = Compression.Compression.Instance.CreateZipEntry(CONTENT_TYPES_PART_NAME);
 		try {
 			// Referenced in ZIP
             zos.PutNextEntry(partEntry);

@@ -21,7 +21,7 @@ namespace NPOI.POIFS.Macros
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using ICSharpCode.SharpZipLib.Zip;
+    using NPOI.Compression;
     using NPOI.POIFS.FileSystem;
     using NPOI.Util;
 
@@ -71,8 +71,8 @@ namespace NPOI.POIFS.Macros
 
         private void OpenOOXML(Stream zipFile)
         {
-            ZipInputStream zis = new ZipInputStream(zipFile);
-            ZipEntry zipEntry;
+            IZipInputStream zis = Compression.Instance.CreateZipInputStream(zipFile);
+            IZipEntry zipEntry;
             while ((zipEntry = zis.GetNextEntry()) != null)
             {
                 if (zipEntry.Name.EndsWith(VBA_PROJECT_OOXML, StringComparison.OrdinalIgnoreCase))
@@ -80,7 +80,7 @@ namespace NPOI.POIFS.Macros
                     try
                     {
                         // Make a NPOIFS from the contents, and close the stream
-                        this.fs = new NPOIFSFileSystem(zis);
+                        this.fs = new NPOIFSFileSystem(zis.ToStream());
                         return;
                     }
                     catch (IOException e)

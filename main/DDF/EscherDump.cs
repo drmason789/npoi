@@ -25,9 +25,7 @@ namespace NPOI.DDF
 
 
     using NPOI.Util;
-    using ICSharpCode.SharpZipLib.Zip.Compression;
-    using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-
+    
     /// <summary>
     /// Used to dump the contents of escher records to a PrintStream.
     /// @author Glen Stampoultzis (glens at apache.org)
@@ -387,18 +385,25 @@ namespace NPOI.DDF
                     while (Read != -1 && Read < nDumpSize)
                         Read += in1.Read(buf, Read, buf.Length);
 
-                    using (MemoryStream bin = new MemoryStream(buf))
-                    {
-                        Inflater inflater = new Inflater(false);
-                        using (InflaterInputStream zIn = new InflaterInputStream(bin, inflater))
-                        {
-                            int bytesToDump = -1;
-                            HexDump.Dump(zIn, 0, bytesToDump);
+                    byte[] zIn = Compression.Compression.Instance.Inflate(buf);
+                    int bytesToDump = -1;
+                    HexDump.Dump(zIn, 0, bytesToDump);
 
-                            recordBytesRemaining -= nDumpSize;
-                            remainingBytes -= nDumpSize;
-                        }
-                    }
+                    recordBytesRemaining -= nDumpSize;
+                    remainingBytes -= nDumpSize;
+
+                    //using (MemoryStream bin = new MemoryStream(buf))
+                    //{
+                    //    Inflater inflater = new Inflater(false);
+                    //    using (InflaterInputStream zIn = new InflaterInputStream(bin, inflater))
+                    //    {
+                    //        int bytesToDump = -1;
+                    //        HexDump.Dump(zIn, 0, bytesToDump);
+
+                    //        recordBytesRemaining -= nDumpSize;
+                    //        remainingBytes -= nDumpSize;
+                    //    }
+                    //}
                 }
 
                 bool isContainer = (options & (short)0x000F) == (short)0x000F;

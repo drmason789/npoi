@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.OPC.Internal.Marshallers
 {
@@ -15,15 +15,15 @@ public class ZipPackagePropertiesMarshaller:PackagePropertiesMarshaller
 {
 	public override bool Marshall(PackagePart part, Stream out1)
 	{
-		if (!(out1 is ZipOutputStream)) {
-			throw new ArgumentException("ZipOutputStream expected!");
+		if (!(out1 is IZipOutputStream)) {
+			throw new ArgumentException($"{nameof(IZipOutputStream)} expected!");
 		}
-		ZipOutputStream zos = (ZipOutputStream) out1;
+		IZipOutputStream zos = (IZipOutputStream) out1;
 
 		// Saving the part in the zip file
 		string name = ZipHelper
 				.GetZipItemNameFromOPCName(part.PartName.URI.ToString());
-        ZipEntry ctEntry = new ZipEntry(name);
+        IZipEntry ctEntry = Compression.Compression.Instance.CreateZipEntry(name);
 
         try
         {

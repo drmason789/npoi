@@ -21,8 +21,6 @@ namespace NPOI.DDF
     using System.Text;
     using System.Drawing;
     using NPOI.Util;
-    using ICSharpCode.SharpZipLib.Zip.Compression;
-    using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
     /// <summary>
     /// @author Daniel Noll
@@ -135,31 +133,17 @@ namespace NPOI.DDF
         /// <returns>the inflated picture data.</returns>
         private static byte[] InflatePictureData(byte[] data)
         {
-            using (MemoryStream out1 = new MemoryStream())
-            {
+            
                 try
                 {
-                    using (MemoryStream ms = new MemoryStream(data))
-                    {
-                        Inflater inflater = new Inflater(false);
-                        using (InflaterInputStream in1 = new InflaterInputStream(ms, inflater))
-                        {
-                            byte[] buf = new byte[4096];
-                            int ReadBytes;
-                            while ((ReadBytes = in1.Read(buf, 0, buf.Length)) > 0)
-                            {
-                                out1.Write(buf, 0, ReadBytes);
-                            }
-                            return out1.ToArray();
-                        }
-                    }
+                    return Compression.Compression.Instance.Inflate(data);
                 }
                 catch (IOException e)
                 {
                     log.Log(POILogger.INFO, "Possibly corrupt compression or non-compressed data", e);
                     return data;
                 }
-            }
+            
         }
 
         /// <summary>

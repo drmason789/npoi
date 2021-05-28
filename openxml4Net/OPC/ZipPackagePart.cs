@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using NPOI.OpenXml4Net.OPC.Internal.Marshallers;
-using ICSharpCode.SharpZipLib.Zip;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.OPC
 {
@@ -19,7 +19,7 @@ public class ZipPackagePart : PackagePart {
     /**
      * The zip entry corresponding to this part.
      */
-    private ZipEntry zipEntry;
+    private IZipEntry zipEntry;
 
     /**
      * Constructor.
@@ -53,7 +53,7 @@ public class ZipPackagePart : PackagePart {
      * @throws InvalidFormatException
      *             Throws if the content of this part is invalid.
      */
-    public ZipPackagePart(OPCPackage container, ZipEntry zipEntry,
+    public ZipPackagePart(OPCPackage container, IZipEntry zipEntry,
             PackagePartName partName, String contentType):	base(container, partName, contentType)
     {
     
@@ -65,7 +65,7 @@ public class ZipPackagePart : PackagePart {
      * 
      * @return The zip entry in the zip structure coresponding to this part.
      */
-    public ZipEntry ZipArchive
+    public IZipEntry ZipArchive
     {
         get{
         return zipEntry;

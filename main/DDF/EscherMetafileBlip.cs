@@ -21,8 +21,6 @@ namespace NPOI.DDF
     using System.Text;
     using System.Drawing;
     using NPOI.Util;
-    using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-    using ICSharpCode.SharpZipLib.Zip.Compression;
     using NPOI.HSSF.UserModel;
 
     /// <summary>
@@ -167,30 +165,14 @@ namespace NPOI.DDF
         /// <returns>the inflated picture data.</returns>
         private static byte[] InflatePictureData(byte[] data)
         {
-            using (MemoryStream in1 = new MemoryStream(data))
+            try
             {
-                using (MemoryStream out1 = new MemoryStream())
-                {
-                    InflaterInputStream zIn = null;
-                    try
-                    {
-                        Inflater inflater = new Inflater(false);
-                        zIn = new InflaterInputStream(in1, inflater);
-
-                        byte[] buf = new byte[4096];
-                        int ReadBytes;
-                        while ((ReadBytes = zIn.Read(buf, 0, buf.Length)) > 0)
-                        {
-                            out1.Write(buf, 0, ReadBytes);
-                        }
-                        return out1.ToArray();
-                    }
-                    catch (IOException e)
-                    {
-                        log.Log(POILogger.WARN, "Possibly corrupt compression or non-compressed data", e);
-                        return data;
-                    }
-                }
+                return Compression.Compression.Instance.Inflate(data);
+            }
+            catch (IOException e)
+            {
+                log.Log(POILogger.WARN, "Possibly corrupt compression or non-compressed data", e);
+                return data;
             }
         }
 
@@ -408,18 +390,11 @@ namespace NPOI.DDF
         {
             base.PictureData = (pictureData);
             UncompressedSize = (pictureData.Length);
-
-            // info of chicago project:
-            // "... LZ compression algorithm in the format used by GNU Zip deflate/inflate with a 32k window ..."
-            // not sure what to do, when lookup tables exceed 32k ...
-
+            
             try
             {
-                MemoryStream bos = new MemoryStream();
-                DeflaterOutputStream dos = new DeflaterOutputStream(bos);
-                dos.Write(pictureData, 0, pictureData.Length);
-                dos.Close();
-                raw_pictureData = bos.ToArray();
+                
+                raw_pictureData = Compression.Compression.Instance.Deflate(pictureData);
             }
             catch (IOException e)
             {

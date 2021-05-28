@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NPOI.Compression;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace NPOI.OpenXml4Net.OPC.Internal.Unmarshallers
 {
@@ -18,7 +18,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Unmarshallers
 
         private PackagePartName partName;
 
-        private ZipEntry zipEntry;
+        private IZipEntry zipEntry;
 
         /**
          * Constructor.
@@ -66,7 +66,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Unmarshallers
         /**
          * @return the zipEntry
          */
-        internal ZipEntry ZipEntry
+        internal IZipEntry ZipEntry
         {
             get
             {

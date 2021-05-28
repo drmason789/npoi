@@ -4,8 +4,8 @@ using System.Text;
 using System.IO;
 using NPOI.OpenXml4Net.OPC;
 using System.Xml;
-using ICSharpCode.SharpZipLib.Zip;
 using NPOI.Util;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.OPC.Internal.Marshallers
 {
@@ -26,10 +26,10 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Marshallers
          */
         public bool Marshall(PackagePart part, Stream os)
         {
-            if (!(os is ZipOutputStream))
+            if (!(os is IZipOutputStream))
             {
                 logger.Log(POILogger.ERROR,"Unexpected class " + os.GetType().Name);
-                throw new OpenXml4NetException("ZipOutputStream expected !");
+                throw new OpenXml4NetException($"{nameof(IZipOutputStream)} expected !");
                 // Normally should happen only in developement phase, so just throw
                 // exception
             }
@@ -41,11 +41,11 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Marshallers
                 return true;
             }
 
-            ZipOutputStream zos = (ZipOutputStream)os;
+            IZipOutputStream zos = (IZipOutputStream)os;
             string name = ZipHelper
                     .GetZipItemNameFromOPCName(part.PartName.URI
                             .OriginalString);
-            ZipEntry partEntry = new ZipEntry(name);
+            IZipEntry partEntry = Compression.Compression.Instance.CreateZipEntry(name);
             try
             {
                 // Create next zip entry
@@ -100,7 +100,7 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Marshallers
          */
         public static bool MarshallRelationshipPart(
                 PackageRelationshipCollection rels, PackagePartName relPartName,
-                ZipOutputStream zos)
+                IZipOutputStream zos)
         {
             // Building xml
             XmlDocument xmlOutDoc = new XmlDocument();
@@ -162,13 +162,13 @@ namespace NPOI.OpenXml4Net.OPC.Internal.Marshallers
             // File.separator + "opc-relationships.xsd";
 
             // Save part in zip
-            ZipEntry ctEntry = new ZipEntry(ZipHelper.GetZipURIFromOPCName(
+            IZipEntry ctEntry = Compression.Compression.Instance.CreateZipEntry(ZipHelper.GetZipURIFromOPCName(
                     relPartName.URI.ToString()).OriginalString);
             try
             {
                 zos.PutNextEntry(ctEntry);
-
-                StreamHelper.SaveXmlInStream(xmlOutDoc, zos);
+                
+                StreamHelper.SaveXmlInStream(xmlOutDoc, zos.ToStream());
                 zos.CloseEntry();
             }
             catch (IOException e)

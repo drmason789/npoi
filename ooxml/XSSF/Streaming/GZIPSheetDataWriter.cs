@@ -15,7 +15,6 @@
    limitations under the License.
 ==================================================================== */
 using System.IO;
-using ICSharpCode.SharpZipLib.GZip;
 using NPOI.Util;
 using NPOI.XSSF.Model;
 
@@ -46,12 +45,12 @@ namespace NPOI.XSSF.Streaming
         
         protected override Stream DecorateInputStream(Stream fis)
         {
-            return new GZipInputStream(fis);
+            return Compression.Compression.Instance.CreateGzipInputStream(fis);
         }
 
         protected override Stream DecorateOutputStream(Stream fos)
         {
-            return new GZipOutputStream(fos);
+            return Compression.Compression.Instance.CreateGzipOutputStream(fos);
         }
     }
 }

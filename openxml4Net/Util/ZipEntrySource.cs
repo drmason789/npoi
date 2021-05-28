@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Text;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using NPOI.Compression;
 
 namespace NPOI.OpenXml4Net.Util
 {
@@ -24,7 +24,7 @@ namespace NPOI.OpenXml4Net.Util
          * Returns an InputStream of the decompressed 
          *  data that makes up the entry
          */
-        Stream GetInputStream(ZipEntry entry);
+        Stream GetInputStream(IZipEntry entry);
 
         /**
          * Indicates we are done with reading, and 
