@@ -105,7 +105,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Compression\Compression.cs" />
-    <Compile Include="Compression\DotNet\DotNetCompression.cs" />
+    <Compile Include="Compression\DotNet\Compression.cs" />
     <Compile Include="Compression\ICompression.cs" />
     <Compile Include="Compression\IZipEntry.cs" />
     <Compile Include="Compression\IZipFile.cs" />
