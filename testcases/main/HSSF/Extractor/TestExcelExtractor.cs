@@ -27,12 +27,36 @@ namespace TestCases.HSSF.Extractor
 
 
     using NUnit.Framework;
-using NPOI.HSSF.Record.Crypto;
+    using NPOI.HSSF.Record.Crypto;
+    using NPOI.Compression;
 
-
-    [TestFixture]
+    
+    [TestFixture(typeof(NPOI.Compression.DotNet.Compression))]
+    [TestFixture(typeof(NPOI.SharpZipLib.Compression))]
     public class TestExcelExtractor
     {
+        ICompression defaultCompression;
+        
+        [TearDown]
+        public void TearDown()
+        {
+            if(this.defaultCompression!=null)
+                Compression.Instance = this.defaultCompression;
+        }
+
+        public TestExcelExtractor(Type compressionType)
+        {
+            if (Compression.Instance?.GetType() != compressionType)
+            {
+                this.defaultCompression = Compression.Instance;
+                Compression.Instance = (ICompression)Activator.CreateInstance(compressionType);
+            }
+            else
+            {
+                this.defaultCompression = null;
+            }
+        }
+
 
         private static ExcelExtractor CreateExtractor(String sampleFileName)
         {

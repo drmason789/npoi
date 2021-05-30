@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using NPOI.Compression;
 
@@ -30,6 +29,7 @@ namespace NPOI.SharpZipLib
 
             MemoryStream bos = new MemoryStream();
             DeflaterOutputStream dos = new DeflaterOutputStream(bos);
+            
             dos.Write(bytes, 0, bytes.Length);
             dos.Close();
             return bos.ToArray();
@@ -37,17 +37,28 @@ namespace NPOI.SharpZipLib
 
         public byte[] Inflate(byte[] deflatedBytes)
         {
-            throw new NotImplementedException();
+            MemoryStream bis = new MemoryStream(deflatedBytes);
+            InflaterInputStream iis = new InflaterInputStream(bis);
+            MemoryStream os = new MemoryStream();
+            iis.CopyTo(os);
+            return os.ToArray();
         }
 
         public byte[] Unzip(byte[] zippedBytes)
         {
-            throw new NotImplementedException();
+            MemoryStream bis = new MemoryStream(zippedBytes);
+            ZipInputStream zis = new ZipInputStream(bis);
+            MemoryStream os = new MemoryStream();
+            zis.ToStream().CopyTo(os);
+            return os.ToArray();
         }
 
         public byte[] Zip(byte[] bytes)
         {
-            throw new NotImplementedException();
+            MemoryStream bos = new MemoryStream(bytes);
+            ZipOutputStream zos = new ZipOutputStream(bos);
+            zos.Write(bytes, 0, bytes.Length);
+            return bos.ToArray();
         }
     }
 }

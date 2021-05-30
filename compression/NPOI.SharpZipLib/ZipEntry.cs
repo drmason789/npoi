@@ -4,7 +4,7 @@ using System.IO;
 
 namespace NPOI.SharpZipLib
 {
-    public class ZipEntry : IZipEntry
+    class ZipEntry : IZipEntry
     {
         internal ICSharpCode.SharpZipLib.Zip.ZipEntry Inner { get; }
 

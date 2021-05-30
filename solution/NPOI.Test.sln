@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestCases", "TestCases", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPOI.OOXML", "..\ooxml\NPOI.OOXML.csproj", "{6BEED965-B9A0-4FFA-B96D-0F380A97331A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPOI.SharpZipLib", "..\compression\NPOI.SharpZipLib\NPOI.SharpZipLib.csproj", "{F59CC45C-FE71-44E5-964A-A7456267E71A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		.net 2 Release|Any CPU = .net 2 Release|Any CPU
@@ -99,6 +101,16 @@ Global
 		{6BEED965-B9A0-4FFA-B96D-0F380A97331A}.NPOI.Tools|Any CPU.Build.0 = .net 4.5 release|Any CPU
 		{6BEED965-B9A0-4FFA-B96D-0F380A97331A}.Release|Any CPU.ActiveCfg = .net 4 Release|Any CPU
 		{6BEED965-B9A0-4FFA-B96D-0F380A97331A}.Release|Any CPU.Build.0 = .net 4 Release|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}..net 2 Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}..net 2 Release|Any CPU.Build.0 = Release|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}..net 4 Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}..net 4 Release|Any CPU.Build.0 = Release|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}.NPOI.Tools|Any CPU.ActiveCfg = Debug|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}.NPOI.Tools|Any CPU.Build.0 = Debug|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F59CC45C-FE71-44E5-964A-A7456267E71A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
