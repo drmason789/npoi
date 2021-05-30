@@ -18,16 +18,18 @@ namespace NPOI.Compression.DotNet
             // https://stackoverflow.com/questions/20850703/cant-inflate-with-c-sharp-using-deflatestream
             int offset = 0;
             if (bytes.Length > 2 && bytes[0] == 0x78)
-                // Skip RFC1950 header
+                // Skip RFC195x header
                 offset = 2;
 
-            using (MemoryStream inStream = new MemoryStream(bytes, offset, bytes.Length - offset))
-            using (System.IO.Compression.DeflateStream ds = new System.IO.Compression.DeflateStream(inStream, CompressionMode.Decompress))
             using (MemoryStream outStream = new MemoryStream())
             {
-                ds.CopyTo(outStream);
+                using (MemoryStream inStream = new MemoryStream(bytes, offset, bytes.Length - offset))
+                using (System.IO.Compression.DeflateStream ds = new System.IO.Compression.DeflateStream(inStream, CompressionMode.Decompress))
+                    ds.CopyTo(outStream);
                 return outStream.ToArray();
             }
+                
+            
 
         }
 
